@@ -12,3 +12,7 @@ twitcurl/libtwitcurl/twitcurl.vcxproj
 twitcurl/libtwitcurl/ZERO_CHECK.vcxproj
 twitcurl/libtwitcurl/Project.sln
 twitcurl/libtwitcurl/CMakeCache.txt
+
+.DS_Store
+._*
+*.o

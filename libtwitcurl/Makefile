@@ -10,8 +10,9 @@ INCLUDE_DIR = $(STAGING_DIR)/usr/include
 LINCLUDE_DIR = $(STAGING_DIR)/usr/local/include
 LIBRARY_DIR = $(STAGING_DIR)/usr/lib
 LLIBRARY_DIR = $(STAGING_DIR)/usr/local/lib
-LDFLAGS += -Wl,-rpath-link=$(STAGING_DIR)/usr/lib
-CC = g++
+
+CXX = g++
+CC = gcc
 REMOVE = rm -f
 COPY = cp
 REMOTEIP = 192.168.1.30
@@ -30,29 +31,72 @@ CDEFS =
 CINCS = 
 
 CFLAGS =$(CDEFS) $(CINCS) $(CSTANDARD)
+CXXFLAGS = -std=c++14
+
+OS := $(shell uname)
+SONAME =
+
+ifeq ($(OS),Darwin)
+	SONAME = -install_name
+	LDFLAGS += -Wl,-rpath,$(STAGING_DIR)/usr/lib
+else
+	SONAME = -soname
+	LDFLAGS += -Wl,-rpath-link=$(STAGING_DIR)/usr/lib
+endif
 
 all: target
 
 target: $(SRC) $(LIBNAME).h
-	$(CC) -Wall -fPIC -c -I$(INCLUDE_DIR) $(SRC) oauthlib.cpp urlencode.cpp base64.cpp HMAC_SHA1.cpp SHA1.cpp
-	$(CC) -shared -Wl,-soname,lib$(LIBNAME).so.1 $(LDFLAGS) -o lib$(LIBNAME).so.1.0 *.o -L$(LIBRARY_DIR) -lcurl
-
+	$(CXX) -Wall -fPIC -c -I$(INCLUDE_DIR) $(SRC) oauthlib.cpp urlencode.cpp base64.cpp HMAC_SHA1.cpp SHA1.cpp
+	$(CXX) -shared -Wl,$(SONAME),lib$(LIBNAME).so.1 $(LDFLAGS) -o lib$(LIBNAME).so.1.0 *.o -L$(LIBRARY_DIR) -lcurl
 #clean project.
 clean:
+ifeq ($(OS),Darwin)
+	$(REMOVE) lib$(LIBNAME)*.so.1.0
+	$(REMOVE) $(LIBNAME).o
+	$(REMOVE) *.o
+else
 	$(REMOVE) lib$(LIBNAME)*.so.1.0
 	$(REMOVE) $(LIBNAME).o
 	$(REMOVE) *.o
 	$(REMOVE) $(LIBRARY_DIR)/lib$(LIBNAME).so*
-	
+endif
+
 # Install library to local openwrt library directory
 install: all
-	$(COPY) lib$(LIBNAME).so.1.0 $(LIBRARY_DIR)
-	$(COPY) lib$(LIBNAME).so.1.0 $(LLIBRARY_DIR)
-	$(COPY) $(LIBNAME).h $(INCLUDE_DIR)/
-	$(COPY) $(LIBNAME).h $(LINCLUDE_DIR)/
-	$(COPY) oauthlib.h $(INCLUDE_DIR)/
-	$(COPY) oauthlib.h $(LINCLUDE_DIR)/
-	ln -sf $(LIBRARY_DIR)/lib$(LIBNAME).so.1.0 $(LIBRARY_DIR)/lib$(LIBNAME).so
-	ln -sf $(LIBRARY_DIR)/lib$(LIBNAME).so.1.0 $(LIBRARY_DIR)/lib$(LIBNAME).so.1
-	ln -sf $(LLIBRARY_DIR)/lib$(LIBNAME).so.1.0 $(LLIBRARY_DIR)/lib$(LIBNAME).so
-	ln -sf $(LLIBRARY_DIR)/lib$(LIBNAME).so.1.0 $(LLIBRARY_DIR)/lib$(LIBNAME).so.1
+ifeq ($(OS),Darwin)
+		$(COPY) lib$(LIBNAME).so.1.0 $(LLIBRARY_DIR)
+		$(COPY) $(LIBNAME).h $(LINCLUDE_DIR)/
+		$(COPY) oauthlib.h $(LINCLUDE_DIR)/
+		ln -sf $(LLIBRARY_DIR)/lib$(LIBNAME).so.1.0 $(LLIBRARY_DIR)/lib$(LIBNAME).so
+		ln -sf $(LLIBRARY_DIR)/lib$(LIBNAME).so.1.0 $(LLIBRARY_DIR)/lib$(LIBNAME).so.1
+else
+	install: all
+		$(COPY) lib$(LIBNAME).so.1.0 $(LIBRARY_DIR)
+		$(COPY) lib$(LIBNAME).so.1.0 $(LLIBRARY_DIR)
+		$(COPY) $(LIBNAME).h $(INCLUDE_DIR)/
+		$(COPY) $(LIBNAME).h $(LINCLUDE_DIR)/
+		$(COPY) oauthlib.h $(INCLUDE_DIR)/
+		$(COPY) oauthlib.h $(LINCLUDE_DIR)/
+		ln -sf $(LIBRARY_DIR)/lib$(LIBNAME).so.1.0 $(LIBRARY_DIR)/lib$(LIBNAME).so
+		ln -sf $(LIBRARY_DIR)/lib$(LIBNAME).so.1.0 $(LIBRARY_DIR)/lib$(LIBNAME).so.1
+		ln -sf $(LLIBRARY_DIR)/lib$(LIBNAME).so.1.0 $(LLIBRARY_DIR)/lib$(LIBNAME).so
+		ln -sf $(LLIBRARY_DIR)/lib$(LIBNAME).so.1.0 $(LLIBRARY_DIR)/lib$(LIBNAME).so.1
+endif
+
+uninstall:
+ifeq ($(OS),Darwin)
+	$(REMOVE) $(LLIBRARY_DIR)/$(LIBNAME).so.1.0
+	$(REMOVE) $(LINCLUDE_DIR)/$(LIBNAME).h
+	unlink $(LLIBRARY_DIR)/lib$(LIBNAME).so
+	unlink $(LLIBRARY_DIR)/lib$(LIBNAME).so.1
+else
+	$(REMOVE) $(LLIBRARY_DIR)/$(LIBNAME).so.1.0
+	$(REMOVE) $(LINCLUDE_DIR)/$(LIBNAME).h
+	$(REMOVE) $(LIBRARY_DIR)/$(LIBNAME).so.1.0
+	$(REMOVE) $(INCLUDE_DIR)/$(LIBNAME).h
+	unlink $(LLIBRARY_DIR)/lib$(LIBNAME).so
+	unlink $(LLIBRARY_DIR)/lib$(LIBNAME).so.1
+	unlink $(LIBRARY_DIR)/lib$(LIBNAME).so
+	unlink $(LIBRARY_DIR)/lib$(LIBNAME).so.1
+endif

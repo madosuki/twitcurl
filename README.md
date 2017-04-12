@@ -1,8 +1,8 @@
 ### Introduction: ###
 
-**This repo is forked repo. Deleted sln files. Build to Windows? You should to cmake3.8 or Hegher And Developer Command Prompt for VS.**
-**Sorry I've poor english.**
-**Below text is original text.**
+**This repo is forked repo. Deleted sln files. Build to Windows? You should to cmake3.7 or Higher And Developer Command Prompt for VS.**
+**Sorry I've poor english.**  
+**Below text is original text.**  
 
 **twitcurl** is a pure C++ library for twitter APIs. twitcurl uses cURL for handling HTTP requests and responses. twitcurl has been tested on Microsoft Windows, Ubuntu and Debian. In fact, it works just fine on any operating system that supports cURL.
   * v1.1 Twitter REST APIs

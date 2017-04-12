@@ -13,7 +13,7 @@ libtwitcurl/ZERO_CHECK.vcxproj
 libtwitcurl/Project.sln
 libtwitcurl/CMakeCache.txt
 libtwitcurl/libtwitcurl.so.1.0
-libtwitcurl/CMakeFiles/.vs
+libtwitcurl/.vs
 
 .DS_Store
 ._*

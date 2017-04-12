@@ -1,6 +1,6 @@
 ### Introduction: ###
 
-**This repo is forked repo. Deleted sln files. Build to Windows? You should to cmake3.7 or Higher And Developer Command Prompt for VS.**
+**This repo is forked repo. Deleted sln files. Build to Windows? You should to cmake3.7 or Higher And Developer Command Prompt for VS.**  
 **Sorry I've poor english.**  
 **Below text is original text.**  
 

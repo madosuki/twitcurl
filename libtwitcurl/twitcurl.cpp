@@ -3,6 +3,10 @@
 #include "twitcurlurls.h"
 #include "twitcurl.h"
 #include "urlencode.h"
+#include <cstdio>
+#include <iostream>
+#include "picojson.h"
+#include <fstream>
 
 /*++
 * @method: twitCurl::twitCurl
@@ -401,6 +405,108 @@ bool twitCurl::search( const std::string& searchQuery, const std::string resultC
     return performGet( buildUrl );
 }
 
+std::ifstream::pos_type fsSize(const char *fname)
+{
+    std::ifstream in(fname, std::ifstream::ate | std::ifstream::binary);
+    return in.tellg();
+}
+
+bool twitCurl::uploadMedia( const std::string path )
+{
+/*    
+    //struct string s;
+    //CURLcode res;
+
+    int fsize = fsSize(path.c_str());
+    printf("File Size: %d\n", fsize);
+
+    //FILE *fl;
+    //fl = fopen( path.c_str(), "rb" );
+    std::string response;
+    std::string buf;
+
+    std::string base = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] + twitterDefaults::TWITCURL_MEDIAUPLOAD_URL +
+twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
+
+    //base += twitCurlDefaults::TWITCURL_URL_SEP_QUES;
+    //base += twitCurlDefaults::TWITCURL_MEDIADATA__BINARY_STRING;
+
+    std::string mediaUrl = base;
+
+    std::string oAuthHttpHeader;
+    struct curl_slist* pOAuthHeaderList = NULL;
+
+    // Prepare standard params 
+    prepareStandardParams();
+
+    // Set OAuth header
+    m_oAuth.getOAuthHeader( eOAuthHttpPost, mediaUrl, "", oAuthHttpHeader );
+    if( oAuthHttpHeader.length() )
+    {
+        pOAuthHeaderList = curl_slist_append( pOAuthHeaderList, oAuthHttpHeader.c_str() );
+        if( pOAuthHeaderList )
+        {
+            printf("set header\n");
+            curl_easy_setopt( m_curlHandle, CURLOPT_HTTPHEADER, pOAuthHeaderList );
+        }
+    }
+    std::cout << mediaUrl << std::endl;
+    std::cout << "Header " << oAuthHttpHeader << std::endl;
+
+    std::ifstream ifs(path);
+    buf.resize(fsize);
+    ifs.read(&buf[0], fsize);
+
+    //std::cout << buf << std::endl;
+
+    struct curl_httppost* post = nullptr;
+    struct curl_httppost* last = nullptr;
+    if(curl_formadd(&post, &last, CURLFORM_COPYNAME, "media", CURLFORM_BUFFER, "data", CURLFORM_BUFFERPTR, &buf, CURLFORM_BUFFERLENGTH, fsize, CURLFORM_CONTENTTYPE, "image/png", CURLFORM_END))
+    {
+        std::cout << "SUCCESS" << std::endl;
+    }
+    else
+    {
+        std::cout << "えらーですってよ " << stderr << std::endl;
+    }
+    //std::cout << post << std::endl;
+    //printf("Check");
+    // Set http request, url and data
+    //curl_easy_setopt( m_curlHandle, CURLOPT_POST, 1 );
+    curl_easy_setopt(m_curlHandle, CURLOPT_URL, mediaUrl.c_str());
+    //curl_easy_setopt( m_curlHandle, CURLOPT_COPYPOSTFIELDS, fl );
+    curl_easy_setopt(m_curlHandle, CURLOPT_HTTPHEADER, pOAuthHeaderList);
+    curl_easy_setopt(m_curlHandle, CURLOPT_HTTPPOST, post);
+    //if( dataStr.length() )
+    //{
+    //    curl_easy_setopt( m_curlHandle, CURLOPT_COPYPOSTFIELDS, dataStr.c_str() );
+    //}
+
+    //res = curl_easy_perform( m_curlHandle );
+    // Send http request
+    if( CURLE_OK == curl_easy_perform( m_curlHandle ) )
+    {
+        printf("start response\n");
+        getLastWebResponse(response);
+        std::cout << response << std::endl;
+
+        if( pOAuthHeaderList )
+        {
+            curl_slist_free_all( pOAuthHeaderList );
+        }
+        return true;
+    }
+
+    curl_formfree(post);
+    if( pOAuthHeaderList )
+    {
+        curl_slist_free_all( pOAuthHeaderList );
+    }
+    */
+    return false;
+ 
+}
+
 /*++
 * @method: twitCurl::statusUpdate
 *
@@ -413,7 +519,7 @@ bool twitCurl::search( const std::string& searchQuery, const std::string resultC
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
-bool twitCurl::statusUpdate( const std::string& newStatus, const std::string inReplyToStatusId )
+bool twitCurl::statusUpdate( const std::string& newStatus, const std::string inReplyToStatusId, const std::string mediaIDs )
 {
     if( newStatus.empty() )
     {

@@ -50,10 +50,13 @@ public:
     bool search( const std::string& searchQuery /* in */, const std::string resultCount = "" /* in */ );
 
     /* Twitter status APIs */
-    bool statusUpdate( const std::string& newStatus /* in */, const std::string inReplyToStatusId = "" /* in */ );
+    bool statusUpdate( const std::string& newStatus /* in */, const std::string inReplyToStatusId = "", const std::string mediaIDs = "" /* in */ );
     bool statusShowById( const std::string& statusId /* in */ );
     bool statusDestroyById( const std::string& statusId /* in */ );
     bool retweetById( const std::string& statusId /* in */ );
+
+    /* Twitter Media APIs */
+    bool uploadMedia( const std::string path );
 
     /* Twitter timeline APIs */
     bool timelineHomeGet( const std::string sinceId = ""  /* in */ );

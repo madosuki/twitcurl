@@ -467,7 +467,7 @@ twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
     }
     else
     {
-        std::cout << "えらーですってよ " << stderr << std::endl;
+        std::cout << "Error " << stderr << std::endl;
     }
     //std::cout << post << std::endl;
     //printf("Check");
